@@ -13,7 +13,7 @@ extern int debug;
 extern struct frame *coremap;
 
 //The hand of the clock.
-int hand;
+static int hand;
 
 /* Page to evict is chosen using the clock algorithm.
  * Returns the page frame number (which is also the index in the coremap)

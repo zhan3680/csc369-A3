@@ -21,23 +21,15 @@ struct refnode{
 
 struct refnode *refhead;
 
-struct refnode *curnode;
-
-// The line of current reference correspond to tracefile.
-int refindex = 0;
-
-// The total number of reference.
-int totalref;
-
-// The map to store all references.
-addr_t *allref;
+// whether there is element in the linked list
+int empty;
 
 /*
  * Helper function to find the distance between next use of the address.
  */
 int cal_nextuse(addr_t addr){
 	int res = 0;
-	struct refnode* cur = curnode;
+	struct refnode* cur = refhead;
 	while(cur != NULL){
 		if(cur->refadd == addr){
 			return res;
@@ -65,6 +57,7 @@ int opt_evict() {
 		}
 		if(curdistance > maxdistance){
 			framenum = i;
+                        maxdistance = curdistance;
 		}
 	}
 
@@ -76,12 +69,15 @@ int opt_evict() {
  * Input: The page table entry for the page that is being accessed.
  */
 void opt_ref(pgtbl_entry_t *p) {
-	int frame = (p->frame) >> PAGE_SHIFT;
-	coremap[frame].vaddr = curnode->refadd;
-	free(curnode);
-	curnode = curnode->next;
-	refindex += 1;
-	return;
+	int frame_index = (p->frame) >> PAGE_SHIFT;
+        if(refhead != NULL){
+	        coremap[frame_index].vaddr = refhead->refadd;
+                struct refnode *referenced = refhead;
+                refhead = refhead -> next;
+                free(referenced);
+        }else {
+                printf("error: nothing to be referenced!\n");
+        }     
 }
 
 /* Initializes any data structures needed for this
@@ -92,11 +88,11 @@ void opt_init() {
 	FILE *tfp = stdin;
 	char buf[MAXLINE];
 	char type;
-	totalref = 0;
+	empty = 1;
 	addr_t vaddr = 0;
-	refhead = malloc(sizeof(struct refnode));
-	curnode = refhead;
-	
+        refhead = NULL;
+        struct refnode *curnode = NULL;
+	struct refnode *newnode = NULL;
 	// Open the source file.
 	if(tracefile != NULL) {
 		if((tfp = fopen(tracefile, "r")) == NULL) {
@@ -108,16 +104,21 @@ void opt_init() {
 	while(fgets(buf, MAXLINE, tfp) != NULL){
 		if(buf[0] != '=') {
 			sscanf(buf, "%c %lx", &type, &vaddr);
-			curnode->refadd = vaddr;
-			curnode->next = malloc(sizeof(struct refnode));
-			curnode = curnode->next;
+                        newnode = (refnode *)malloc(sizeof(struct refnode));
+			newnode->refadd = vaddr;
+                        newnode->next = NULL;
+                        if(empty){
+                                refhead = newnode;
+                                curnode = newnode;
+                                empty = 0;
+                        }else{
+                                curnode->next = newnode;
+                                curnode = curnode->next;
+                        }
 		} else {
 			continue;
-		}
-		totalref += 1;
+		}		
 	}
-	curnode->next = NULL;
-	curnode = refhead;
 	fclose(tfp);
 }
 

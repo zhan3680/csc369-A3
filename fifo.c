@@ -12,7 +12,7 @@ extern int debug;
 
 extern struct frame *coremap;
 
-static int evict = 0;
+static int evict;
 
 /* Page to evict is chosen using the fifo algorithm.
  * Returns the page frame number (which is also the index in the coremap)
@@ -37,4 +37,5 @@ void fifo_ref(pgtbl_entry_t *p) {
  * replacement algorithm 
  */
 void fifo_init() {   
+        evict = 0;
 }
