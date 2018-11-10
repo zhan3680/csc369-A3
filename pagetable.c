@@ -163,14 +163,15 @@ char *find_physpage(addr_t vaddr, char type) {
 	// Check if p is valid or not, on swap or not, and handle appropriately
         if(p->frame & PG_VALID){ //page in physical memory
                 hit_count += 1;        
-        }else if(p->frame & PG_ONSWAP){ //page has been swapped to swap file, need t obring it back to physical memory
+        }else if(p->frame & PG_ONSWAP){ //page has been swapped to swap file, need to bring it back to physical memory
                 miss_count += 1;
                 frame_number = allocate_frame(p);              
                 int res = 1;
                 if((res = swap_pagein(frame_number, p->swap_off)) != 0){
                         exit(res);
                 }
-                p->frame = frame_number << PAGE_SHIFT;
+                //p->frame = frame_number << PAGE_SHIFT;
+                p->frame &= ~PG_DIRTY; 
                 p->frame &= ~PG_ONSWAP;
         }else{ //first reference to this page, store it in page frame in physical memory
                 miss_count += 1;
