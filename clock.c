@@ -26,6 +26,7 @@ int clock_evict() {
 		cur->frame &= ~PG_REF;
 		hand = (hand + 1)%memsize;
 	}
+        coremap[hand].in_use = 0;
 	return hand;
 }
 

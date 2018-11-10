@@ -60,7 +60,7 @@ int opt_evict() {
                         maxdistance = curdistance;
 		}
 	}
-
+        coremap[framenum].in_use = 0;
 	return framenum;
 }
 
