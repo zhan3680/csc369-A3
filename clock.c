@@ -43,5 +43,10 @@ void clock_ref(pgtbl_entry_t *p) {
  * algorithm. 
  */
 void clock_init() {
+        for(int k = 0; k < memsize; k++){  
+                coremap[k].in_use = 0;       
+                coremap[k].pte = NULL;
+                coremap[k].vaddr = -1;
+        }        
 	hand = 0;
 }

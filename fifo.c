@@ -37,5 +37,10 @@ void fifo_ref(pgtbl_entry_t *p) {
  * replacement algorithm 
  */
 void fifo_init() {   
+        for(int k = 0; k < memsize; k++){  
+                coremap[k].in_use = 0;       
+                coremap[k].pte = NULL;
+                coremap[k].vaddr = -1;
+        }
         evict = 0;
 }

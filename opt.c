@@ -93,6 +93,11 @@ void opt_init() {
         refhead = NULL;
         struct refnode *curnode = NULL;
 	struct refnode *newnode = NULL;
+        for(int k = 0; k < memsize; k++){  
+                coremap[k].in_use = 0;       
+                coremap[k].pte = NULL;
+                coremap[k].vaddr = -1;
+        }
 	// Open the source file.
 	if(tracefile != NULL) {
 		if((tfp = fopen(tracefile, "r")) == NULL) {
@@ -104,7 +109,7 @@ void opt_init() {
 	while(fgets(buf, MAXLINE, tfp) != NULL){
 		if(buf[0] != '=') {
 			sscanf(buf, "%c %lx", &type, &vaddr);
-                        newnode = (refnode *)malloc(sizeof(struct refnode));
+                        newnode = (struct refnode *)malloc(sizeof(struct refnode));
 			newnode->refadd = vaddr;
                         newnode->next = NULL;
                         if(empty){

@@ -63,8 +63,8 @@ extern void print_pagedirectory(void);
 
 struct frame {
 	char in_use;       // True if frame is allocated, False if frame is free
-	pgtbl_entry_t *pte;// Pointer back to pagetable entry (pte) for page stored in this frame
-	addr_t vaddr = -1;      // this tells us which virtual page is stored in this frame, which is of great importance to OPT algorithm!             
+	pgtbl_entry_t *pte;     // Pointer back to pagetable entry (pte) for page stored in this frame
+	addr_t vaddr;      // this tells us which virtual page is stored in this frame, which is of great importance to OPT algorithm!             
 };
 
 /* The coremap holds information about physical memory.

@@ -35,7 +35,7 @@ struct stacknode* tail;
  */
 int lru_evict() {
 	int evict_frame = headnode->number;
-        struct evict_node = headnode;
+        struct stacknode *evict_node = headnode;
 	refmap[evict_frame].node = NULL;
 	refmap[evict_frame].isref = 0;
 	headnode = headnode->next;
@@ -87,6 +87,11 @@ void lru_ref(pgtbl_entry_t *p) {
  * replacement algorithm 
  */
 void lru_init() {
+        for(int k = 0; k < memsize; k++){  
+                coremap[k].in_use = 0;       
+                coremap[k].pte = NULL;
+                coremap[k].vaddr = -1;
+        }
 	refmap = malloc(sizeof(struct mapentry) * memsize);
 	headnode = malloc(sizeof(struct stacknode));
 	headnode->next = NULL;
