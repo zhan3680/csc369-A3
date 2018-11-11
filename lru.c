@@ -12,6 +12,8 @@ extern int debug;
 
 extern struct frame *coremap;
 
+int empty;
+
 struct stacknode{
 	int number;
 	struct stacknode* next;
@@ -62,6 +64,7 @@ void lru_ref(pgtbl_entry_t *p) {
 		                tail->next = curnode;
 		                tail = curnode;
                         }else{ //at the front
+                                headnode = headnode->next; //update headnode in this case!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                 (curnode->next)->prev = NULL;
 		                curnode->prev = tail;
                                 curnode->next = NULL;
@@ -70,14 +73,22 @@ void lru_ref(pgtbl_entry_t *p) {
                         }
                 }
 	} else {
-		struct stacknode* newnode = malloc(sizeof(struct stacknode));
+                struct stacknode* newnode = malloc(sizeof(struct stacknode));
+                newnode->number = frame;
+                newnode->next = NULL;
+                newnode->prev = NULL;
+                if(empty){
+                        headnode = newnode;                       
+                        tail = newnode;
+                        empty = 0;
+
+                }else{
+                        tail->next = newnode;
+		        newnode->prev = tail;
+                        tail = newnode;
+                }		
 		refmap[frame].isref = 1;
 		refmap[frame].node = newnode;
-		tail->next = newnode;
-		newnode->prev = tail;
-		newnode->number = frame;
-                newnode->next = NULL;
-		tail = newnode;
 	}
 	return;
 }
@@ -92,12 +103,15 @@ void lru_init() {
                 coremap[k].pte = NULL;
                 coremap[k].vaddr = -1;
         }
+        empty = 1;
 	refmap = malloc(sizeof(struct mapentry) * memsize);
-	headnode = malloc(sizeof(struct stacknode));
+	/*headnode = malloc(sizeof(struct stacknode));
 	headnode->next = NULL;
 	headnode->prev = NULL;
         headnode->number = -1;
-	tail = headnode;
+	tail = headnode;*/
+        headnode = NULL;
+        tail = NULL;
 	for(int i = 0; i < memsize; i++){
 		refmap[i].isref = 0;
 		refmap[i].node = NULL;
