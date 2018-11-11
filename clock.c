@@ -25,6 +25,7 @@ int clock_evict() {
 	while(cur->frame & PG_REF){
 		cur->frame &= ~PG_REF;
 		hand = (hand + 1)%memsize;
+                cur = coremap[hand].pte;
 	}
         coremap[hand].in_use = 0;
 	return hand;
@@ -35,7 +36,9 @@ int clock_evict() {
  * Input: The page table entry for the page that is being accessed.
  */
 void clock_ref(pgtbl_entry_t *p) {
-	p->frame |= PG_REF;
+        //update corresponding pte in coremap; 
+	int frame_num = p->frame >> PAGE_SHIFT;
+        coremap[frame_num].pte = p;
 	return;
 }
 

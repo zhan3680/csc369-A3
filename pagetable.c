@@ -35,7 +35,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 	if(frame == -1) { // Didn't find a free page.
 		// Call replacement algorithm's evict function to select victim
 		frame = evict_fcn();
-
+                
 		// All frames were in use, so victim frame must hold some page
 		// Write victim page to swap, if needed, and update pagetable
 		// IMPLEMENTATION NEEDED
@@ -60,7 +60,7 @@ int allocate_frame(pgtbl_entry_t *p) {
 	// Record information for virtual page that will now be stored in frame
 	coremap[frame].in_use = 1;
 	coremap[frame].pte = p;
-
+        
 	return frame;
 }
 
