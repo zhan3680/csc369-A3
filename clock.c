@@ -21,6 +21,7 @@ static int hand;
  */
 
 int clock_evict() {
+        int res;
 	pgtbl_entry_t *cur = coremap[hand].pte;
 	while(cur->frame & PG_REF){
 		cur->frame &= ~PG_REF;
@@ -28,7 +29,9 @@ int clock_evict() {
                 cur = coremap[hand].pte;
 	}
         coremap[hand].in_use = 0;
-	return hand;
+        res = hand;
+        hand = (hand + 1)%memsize;
+	return res;
 }
 
 /* This function is called on each access to a page to update any information
