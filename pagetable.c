@@ -155,7 +155,7 @@ char *find_physpage(addr_t vaddr, char type) {
         }
 
 	// Use top-level page directory to get pointer to 2nd-level page table        
-        pgtbl_entry_t *second_level_table = (pgtbl_entry_t *)(pgdir[idx].pde & PAGE_MASK);  //(pgtbl_entry_t *)(pgdir[idx].pde & PAGE_MASK) vs (pgtbl_entry_t *)(pgdir[idx].pde & ~PG_VALID)?????????????????????
+        pgtbl_entry_t *second_level_table = (pgtbl_entry_t *)(pgdir[idx].pde & ~PG_VALID);  //(pgtbl_entry_t *)(pgdir[idx].pde & PAGE_MASK) vs (pgtbl_entry_t *)(pgdir[idx].pde & ~PG_VALID)?????????????????????
 
 	// Use vaddr to get index into 2nd-level page table and initialize 'p'
         p = &second_level_table[PGTBL_INDEX(vaddr)];        
